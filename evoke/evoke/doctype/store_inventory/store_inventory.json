@@ -5,17 +5,27 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_s0ib"
+  "store_inventory_information_section",
+  "assigned_store"
  ],
  "fields": [
   {
-   "fieldname": "section_break_s0ib",
-   "fieldtype": "Section Break"
+   "fieldname": "store_inventory_information_section",
+   "fieldtype": "Section Break",
+   "label": "Store Inventory Information"
+  },
+  {
+   "fieldname": "assigned_store",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Assigned Store",
+   "options": "Store",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-05 14:12:38.290297",
+ "modified": "2024-04-05 19:02:39.013125",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Store Inventory",

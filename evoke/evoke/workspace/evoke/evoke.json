@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"tbGJz7hoq4\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Evoke</span>\",\"col\":12}},{\"id\":\"S8OjiNp_d0\",\"type\":\"card\",\"data\":{\"card_name\":\"Store Modules\",\"col\":4}},{\"id\":\"Y7AaQFafwX\",\"type\":\"card\",\"data\":{\"card_name\":\"Custom Accounting Modules\",\"col\":4}},{\"id\":\"OWmMuy5jGr\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"tbGJz7hoq4\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Evoke</span>\",\"col\":12}},{\"id\":\"Tr2HxK-666\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Store\",\"col\":3}},{\"id\":\"PaBxEmOYRc\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"S8OjiNp_d0\",\"type\":\"card\",\"data\":{\"card_name\":\"Store Modules\",\"col\":4}},{\"id\":\"Y7AaQFafwX\",\"type\":\"card\",\"data\":{\"card_name\":\"Custom Accounting Modules\",\"col\":4}},{\"id\":\"OWmMuy5jGr\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2024-04-05 18:16:37.962414",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,25 +13,6 @@
  "is_hidden": 0,
  "label": "Evoke",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Store Modules",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Store",
-   "link_count": 0,
-   "link_to": "Store",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -69,13 +50,48 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "description": "All store information.",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Store Modules",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Store",
+   "link_count": 0,
+   "link_to": "Store",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Store Inventory",
+   "link_count": 0,
+   "link_to": "Store Inventory",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-04-05 18:26:33.771383",
+ "modified": "2024-04-05 19:05:17.153551",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Evoke",
- "number_cards": [],
+ "number_cards": [
+  {
+   "label": "Total Store",
+   "number_card_name": "Store"
+  }
+ ],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
