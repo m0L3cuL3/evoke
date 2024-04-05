@@ -1,8 +1,10 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:store_name",
  "creation": "2024-04-03 20:50:22.917297",
+ "default_view": "List",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -34,7 +36,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-05 13:38:46.880219",
+ "modified": "2024-04-05 18:06:56.900207",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Store",
