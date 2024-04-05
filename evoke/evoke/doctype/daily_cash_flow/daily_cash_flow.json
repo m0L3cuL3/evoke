@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:{store} - {month_year_entry}",
+ "creation": "2024-04-03 20:57:33.576655",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "setup_section",
+  "store",
+  "column_break_qtwy",
+  "date",
+  "month_year_entry",
+  "daily_entries_section",
+  "daily_entries"
+ ],
+ "fields": [
+  {
+   "fieldname": "setup_section",
+   "fieldtype": "Section Break",
+   "label": "Setup"
+  },
+  {
+   "fieldname": "store",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Store",
+   "options": "Store",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qtwy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "ctrl + up / ctrl + down = Create new row",
+   "fieldname": "daily_entries_section",
+   "fieldtype": "Section Break",
+   "label": "Daily Entries"
+  },
+  {
+   "columns": 7,
+   "fieldname": "daily_entries",
+   "fieldtype": "Table",
+   "label": "Entries",
+   "options": "Daily Cash Flow Item"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "month_year_entry",
+   "fieldtype": "Data",
+   "label": "Month Year",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-04-04 15:37:03.012852",
+ "modified_by": "Administrator",
+ "module": "Evoke",
+ "name": "Daily Cash Flow",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
