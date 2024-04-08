@@ -4,6 +4,16 @@
 frappe.ui.form.on('Daily Cash Flow', {
   refresh: function (frm) {
     frm.set_df_property('date', 'read_only', frm.is_new() ? 0 : 1);
+    // const EXISTING_ROWS_IN_CHILD_TABLE = cur_frm.fields_dict["daily_entries"].grid.grid_rows;
+    // for (var row in EXISTING_ROWS_IN_CHILD_TABLE) {
+    //     frappe.utils.filter_dict(
+    //         EXISTING_ROWS_IN_CHILD_TABLE[row].docfields,
+    //         { "fieldname": "type" }
+    //     )[0].options = [];
+    // }
+
+    // // Save the changes
+    // cur_frm.refresh();
   },
   date: function (frm) {
     console.log(frm);
@@ -22,7 +32,7 @@ frappe.ui.form.on('Daily Cash Flow', {
           });
           refresh_field('daily_entries');
         });
-      frappe
+        frappe
         .call({
           method: 'evoke.api.get_month_and_year',
           args: { date: date },
@@ -36,7 +46,12 @@ frappe.ui.form.on('Daily Cash Flow', {
   },
 });
 
-frappe.ui.form.on('Daily Cash Flow Item', {
-  //   transaction: function (frm, cdt, cdn) {
-  //   },
+frappe.ui.form.on('Daily Cash Flow Item', 'transaction', function(frm) {
+  if (frm.doc.transaction === 'Income') {
+    set_field_options('type', ['Sales'])
+  } else if (frm.doc.transaction === 'Expenses') {
+    set_field_options('type', ['Payroll', 'Operating Expenses', 'Marketing', 'Rental', 'Product Cost', 'Sales', 'Incentives'])
+  } else {
+    set_field_options('type', [])
+  }
 });

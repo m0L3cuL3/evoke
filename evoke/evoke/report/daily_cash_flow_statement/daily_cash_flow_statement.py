@@ -4,14 +4,14 @@ import frappe
 def execute(filters=None):
     data = get_data(filters)
     columns = get_columns(filters)
+    chart = get_chart(filters)
     report_summary = get_report_summary(filters)
     
-    return columns, data, None, None, report_summary
+    return columns, data, None, chart, report_summary
 
 def get_columns(filters):
     columns = [
         { "fieldname": "store", "label": "Store", "width": 200 },
-        { "fieldname": "month_year_entry", "label": "Entry", "fieldtype": "Data", "width": 160 },
         { "fieldname": "day_date", "label": "Day", "fieldtype": "Date", "width": 120 },
         { "fieldname": "transaction", "label": "Transaction", "width": 120 },
         { "fieldname": "type", "label": "Type", "width": 120 },
@@ -32,7 +32,7 @@ def get_conditions(filters):
 def get_data(filters):
     conditions = get_conditions(filters)
     data = []
-    sql_result = frappe.db.sql("SELECT t1.store, t1.month_year_entry, t2.day_date, t2.transaction, t2.type, t2.amount, t2.user_remarks FROM `tabDaily Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent" + conditions + "ORDER BY t2.day_date ASC", as_dict=1)
+    sql_result = frappe.db.sql("SELECT t2.store, t2.day_date, t2.transaction, t2.type, t2.amount, t2.user_remarks FROM `tabDaily Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent" + conditions + "ORDER BY t2.day_date DESC, t2.store DESC, t2.transaction DESC", as_dict=1)
 
     for row in sql_result:
         if row['transaction'] == 'Income':
@@ -44,17 +44,17 @@ def get_data(filters):
                     incentives = sub_row['amount']
                     break
             deposit = sales - incentives
-            r = {'store': row['store'], 'month_year_entry': row['month_year_entry'], 'day_date': row['day_date'], 'transaction': row['transaction'], 'type': row['type'], 'amount': row['amount'], 'deposit': deposit, 'user_remarks': row['user_remarks']}
+            r = {'store': row['store'], 'day_date': row['day_date'], 'transaction': row['transaction'], 'type': row['type'], 'amount': row['amount'], 'deposit': deposit, 'user_remarks': row['user_remarks']}
             data.append(r)
         else:
-            r = {'store': row['store'], 'month_year_entry': row['month_year_entry'], 'day_date': row['day_date'], 'transaction': row['transaction'], 'type': row['type'], 'amount': row['amount'], 'deposit': None, 'user_remarks': row['user_remarks']}
+            r = {'store': row['store'], 'day_date': row['day_date'], 'transaction': row['transaction'], 'type': row['type'], 'amount': row['amount'], 'deposit': None, 'user_remarks': row['user_remarks']}
             data.append(r)
 
     return data
 
 def get_report_summary(filters):
     conditions = get_conditions(filters)
-    data = frappe.db.sql("SELECT t1.store, t1.month_year_entry, t2.day_date, t2.transaction, t2.type, t2.amount, t2.user_remarks FROM `tabDaily Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent" + conditions + "ORDER BY t2.day_date ASC", as_dict=1)
+    data = frappe.db.sql("SELECT t2.store, t2.day_date, t2.transaction, t2.type, t2.amount, t2.user_remarks FROM `tabDaily Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent" + conditions + "ORDER BY t2.day_date ASC, t2.store ASC, t2.transaction DESC", as_dict=1)
     
     sales = 0
     product_cost = 0
@@ -87,3 +87,13 @@ def get_report_summary(filters):
     ]
 
     return report_summary
+
+def get_chart(filters):
+    conditions = get_conditions(filters)
+    data = frappe.db.sql("SELECT store_name FROM `tabStore`", as_dict=1)
+    labels = []
+    for row in data:
+        labels.append(row['store_name'])
+    chart = { 'data': {'labels': labels, 'datasets': [{'values': []}]}, 'type': 'bar' }
+
+    return chart
