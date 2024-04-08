@@ -2,15 +2,14 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:{store} - {month_year_entry}",
+ "autoname": "format:{month_year_entry}",
  "creation": "2024-04-03 20:57:33.576655",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "setup_section",
-  "store",
-  "column_break_qtwy",
   "date",
+  "column_break_qtwy",
   "month_year_entry",
   "daily_entries_section",
   "daily_entries"
@@ -20,14 +19,6 @@
    "fieldname": "setup_section",
    "fieldtype": "Section Break",
    "label": "Setup"
-  },
-  {
-   "fieldname": "store",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Store",
-   "options": "Store",
-   "reqd": 1
   },
   {
    "fieldname": "column_break_qtwy",
@@ -49,7 +40,8 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date",
+   "in_list_view": 1,
+   "label": "Initial Date",
    "reqd": 1
   },
   {
@@ -61,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-04 15:37:03.012852",
+ "modified": "2024-04-08 13:46:50.651808",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Daily Cash Flow",
@@ -83,5 +75,6 @@
  ],
  "sort_field": "creation",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
