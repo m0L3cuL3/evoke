@@ -4,6 +4,7 @@
  "allow_rename": 1,
  "autoname": "format:{month_year_entry}",
  "creation": "2024-04-03 20:57:33.576655",
+ "default_view": "List",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -53,7 +54,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-11 12:15:48.646026",
+ "modified": "2024-04-11 20:15:53.363936",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Daily Cash Flow",
