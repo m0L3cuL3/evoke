@@ -46,12 +46,12 @@ frappe.ui.form.on('Daily Cash Flow', {
   },
 });
 
-frappe.ui.form.on('Daily Cash Flow Item', 'transaction', function(frm) {
-  if (frm.doc.transaction === 'Income') {
-    set_field_options('type', ['Sales'])
-  } else if (frm.doc.transaction === 'Expenses') {
-    set_field_options('type', ['Payroll', 'Operating Expenses', 'Marketing', 'Rental', 'Product Cost', 'Sales', 'Incentives'])
-  } else {
-    set_field_options('type', [])
-  }
-});
+// frappe.ui.form.on('Daily Cash Flow Item', 'transaction', function(frm) {
+//   if (frm.doc.transaction === 'Income') {
+//     set_field_options('type', ['Sales'])
+//   } else if (frm.doc.transaction === 'Expenses') {
+//     set_field_options('type', ['Payroll', 'Operating Expenses', 'Marketing', 'Rental', 'Product Cost', 'Sales', 'Incentives'])
+//   } else {
+//     set_field_options('type', [])
+//   }
+// });

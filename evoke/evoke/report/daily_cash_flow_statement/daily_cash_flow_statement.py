@@ -12,7 +12,7 @@ def execute(filters=None):
 def get_columns(filters):
     columns = [
         { "fieldname": "store", "label": "Store", "width": 200 },
-        { "fieldname": "day_date", "label": "Day", "fieldtype": "Date", "width": 120 },
+        { "fieldname": "day_date", "label": "Day", "fieldtype": "Date", "width": 200 },
         { "fieldname": "transaction", "label": "Transaction", "width": 120 },
         { "fieldname": "type", "label": "Type", "width": 120 },
         { "fieldname": "amount", "label": "Amount", "fieldtype": "Currency", "width": 120 },
@@ -89,11 +89,14 @@ def get_report_summary(filters):
     return report_summary
 
 def get_chart(filters):
-    conditions = get_conditions(filters)
     data = frappe.db.sql("SELECT store_name FROM `tabStore`", as_dict=1)
     labels = []
+    sales = []
     for row in data:
         labels.append(row['store_name'])
-    chart = { 'data': {'labels': labels, 'datasets': [{'values': []}]}, 'type': 'bar' }
+        total_store_sales = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_sales_amount FROM `tabDaily Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t2.store = '{row['store_name']}' AND t2.transaction = 'Income'""", as_dict=1)
+        print(total_store_sales)
+        sales.append(total_store_sales[0].total_sales_amount)
+    chart = { 'data': {'labels': labels, 'datasets': [{'values': sales}]}, 'type': 'bar' }
 
     return chart
