@@ -40,9 +40,11 @@ def get_data(filters):
             incentives = 0
             # Find incentives if present
             for sub_row in sql_result:
-                if sub_row['day_date'] == row['day_date'] and sub_row['transaction'] == 'Expenses' and sub_row['type'] == 'Incentives':
+                if sub_row['store'] == row['store'] and sub_row['day_date'] == row['day_date'] and sub_row['transaction'] == 'Expenses' and sub_row['type'] == 'Incentives':
+                    print(sub_row)
                     incentives = sub_row['amount']
                     break
+            
             deposit = sales - incentives
             r = {'store': row['store'], 'day_date': row['day_date'], 'transaction': row['transaction'], 'type': row['type'], 'amount': row['amount'], 'deposit': deposit, 'user_remarks': row['user_remarks']}
             data.append(r)
@@ -95,7 +97,6 @@ def get_chart(filters):
     for row in data:
         labels.append(row['store_name'])
         total_store_sales = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_sales_amount FROM `tabDaily Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t2.store = '{row['store_name']}' AND t2.transaction = 'Income'""", as_dict=1)
-        print(total_store_sales)
         sales.append(total_store_sales[0].total_sales_amount)
     chart = { 'data': {'labels': labels, 'datasets': [{'values': sales}]}, 'type': 'bar' }
 
