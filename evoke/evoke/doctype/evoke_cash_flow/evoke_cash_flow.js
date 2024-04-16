@@ -1,7 +1,7 @@
 // Copyright (c) 2024, Sean Baang and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Daily Cash Flow", {
+frappe.ui.form.on("Evoke Cash Flow", {
 	refresh: function (frm) {
 		frm.set_df_property("date", "read_only", frm.is_new() ? 0 : 1);
 		// const EXISTING_ROWS_IN_CHILD_TABLE = cur_frm.fields_dict["daily_entries"].grid.grid_rows;
@@ -51,6 +51,7 @@ frappe.ui.form.on("Daily Cash Flow", {
 });
 
 frappe.ui.form.on("Daily Cash Flow Item", {
+	onload: function (frm) {},
 	refresh: function (frm) {
 		frm.fields_dict.transaction.$input.on("change", function () {
 			var selectedOption = $(this).val();
@@ -60,5 +61,12 @@ frappe.ui.form.on("Daily Cash Flow Item", {
 				$(this).css("color", "var(--blue-600)");
 			}
 		});
+	},
+	transaction: function (frm) {
+		// frappe.meta.docfield_map["Select"].fieldtype.formatter = (value) => {
+		// 	console.log(value);
+		// 	if (value === "Income") return "🔵 Section Break";
+		// 	else return value;
+		// };
 	},
 });

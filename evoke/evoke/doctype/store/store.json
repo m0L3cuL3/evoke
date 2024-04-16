@@ -10,7 +10,9 @@
  "field_order": [
   "store_information_section",
   "store_name",
-  "floor"
+  "floor",
+  "store_rental_rates_section",
+  "store_rental_rates"
  ],
  "fields": [
   {
@@ -32,11 +34,22 @@
    "label": "Store Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "store_rental_rates_section",
+   "fieldtype": "Section Break",
+   "label": "Store Rental Rates"
+  },
+  {
+   "fieldname": "store_rental_rates",
+   "fieldtype": "Table",
+   "label": "Rental Rates",
+   "options": "Store Rental Rates"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-05 18:06:56.900207",
+ "modified": "2024-04-15 15:47:30.693273",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Store",
