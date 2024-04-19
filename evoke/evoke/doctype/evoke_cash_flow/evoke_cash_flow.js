@@ -4,20 +4,6 @@
 frappe.ui.form.on("Evoke Cash Flow", {
 	refresh: function (frm) {
 		frm.set_df_property("date", "read_only", frm.is_new() ? 0 : 1);
-		// const EXISTING_ROWS_IN_CHILD_TABLE = cur_frm.fields_dict["daily_entries"].grid.grid_rows;
-		// for (var row in EXISTING_ROWS_IN_CHILD_TABLE) {
-		//     frappe.utils.filter_dict(
-		//         EXISTING_ROWS_IN_CHILD_TABLE[row].docfields,
-		//         { "fieldname": "type" }
-		//     )[0].options = [];
-		// }
-
-		// // Save the changes
-		// cur_frm.refresh();
-
-		// frm.fields_dict.date.$input.on("change", function () {
-		// 	$(this).css("color", "var(--yellow-600)");
-		// });
 	},
 	date: function (frm) {
 		console.log(frm);
@@ -42,7 +28,6 @@ frappe.ui.form.on("Evoke Cash Flow", {
 					args: { date: date },
 				})
 				.done((r) => {
-					console.log(r);
 					frm.doc.month_year_entry = r.message;
 					refresh_field("month_year_entry");
 				});

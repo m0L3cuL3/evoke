@@ -12,6 +12,8 @@
   "date",
   "column_break_qtwy",
   "month_year_entry",
+  "expenses_section",
+  "administrative_expense",
   "daily_entries_section",
   "daily_entries"
  ],
@@ -26,7 +28,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "description": "ctrl + up / ctrl + down = Create new row",
    "fieldname": "daily_entries_section",
    "fieldtype": "Section Break",
    "label": "Daily Entries"
@@ -50,11 +51,22 @@
    "fieldtype": "Data",
    "label": "Month Year",
    "read_only": 1
+  },
+  {
+   "fieldname": "administrative_expense",
+   "fieldtype": "Currency",
+   "label": "Administrative Expense",
+   "precision": "2"
+  },
+  {
+   "fieldname": "expenses_section",
+   "fieldtype": "Section Break",
+   "label": "Expenses"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-16 12:10:32.207639",
+ "modified": "2024-04-18 16:08:51.032741",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Evoke Cash Flow",

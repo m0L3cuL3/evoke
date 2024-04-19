@@ -8,48 +8,72 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "store_information_tab",
   "store_information_section",
   "store_name",
-  "floor",
+  "store_address",
+  "column_break_bmhr",
+  "is_active",
+  "store_rental_rates_tab",
   "store_rental_rates_section",
   "store_rental_rates"
  ],
  "fields": [
   {
    "fieldname": "store_information_section",
-   "fieldtype": "Section Break",
-   "label": "Store Information"
-  },
-  {
-   "fieldname": "floor",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Floor"
+   "fieldtype": "Section Break"
   },
   {
    "allow_in_quick_entry": 1,
    "fieldname": "store_name",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_preview": 1,
    "label": "Store Name",
    "reqd": 1,
    "unique": 1
   },
   {
    "fieldname": "store_rental_rates_section",
-   "fieldtype": "Section Break",
-   "label": "Store Rental Rates"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "store_rental_rates",
    "fieldtype": "Table",
    "label": "Rental Rates",
    "options": "Store Rental Rates"
+  },
+  {
+   "fieldname": "column_break_bmhr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "store_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Store Information"
+  },
+  {
+   "fieldname": "store_address",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Store Address"
+  },
+  {
+   "fieldname": "store_rental_rates_tab",
+   "fieldtype": "Tab Break",
+   "label": "Store Rental Rates"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-15 15:47:30.693273",
+ "modified": "2024-04-18 15:16:50.981211",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Store",
