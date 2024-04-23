@@ -1,0 +1,12 @@
+{% extends "templates/web.html" %}
+
+{% block breadcrumbs %}
+	{% include "templates/includes/breadcrumbs.html" %}
+{% endblock %}
+
+{% block page_content %}
+<h1>{{ title |e }}</h1>
+<p>{{ doc.store_address }}</p>
+{% endblock %}
+
+<!-- this is a sample default web page template -->

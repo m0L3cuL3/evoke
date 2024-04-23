@@ -1,0 +1,13 @@
+{% if doc.is_active != 0 %}
+<div class="py-4 col">
+	<div class="card">
+		<div class="card-body">
+			<h5 class="card-title">{{ (doc.title or doc.name) |e }}</h5>
+			<p class="card-text">{{ doc.store_address }}</p>
+			<a class="btn btn-primary" href="/{{ doc.route |e }}">Visit Store Statistics</a>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+<!-- this is a sample default list template -->

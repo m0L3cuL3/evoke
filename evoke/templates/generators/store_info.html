@@ -1,0 +1,31 @@
+{% extends "templates/web.html" %}
+
+{% block breadcrumbs %}
+	{% include "templates/includes/breadcrumbs.html" %}
+{% endblock %}
+
+{% block page_content %}
+<div class="">
+    <h1 style="margin-top: 0px;">{{ title |e }}</h1>
+    <p>{{ doc.store_address }}</p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h4>Assigned Staff</h4>
+            <ul>
+                {% for x in range(5) %}
+                {% if x == 3 %}
+                    <li>John Doe <span class="badge badge-success">OIC</span></li>
+                {% endif %}
+                    <li>John Doe</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col">
+            <h4>Statistics</h4>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

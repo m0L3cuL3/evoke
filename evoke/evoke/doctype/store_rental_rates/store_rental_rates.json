@@ -9,7 +9,6 @@
   "store_rental_information_section",
   "rental_date",
   "rental_month_year",
-  "linked_cash_flow",
   "rental_rate"
  ],
  "fields": [
@@ -44,21 +43,12 @@
    "in_preview": 1,
    "label": "Rental Month and Year",
    "read_only": 1
-  },
-  {
-   "columns": 2,
-   "fieldname": "linked_cash_flow",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_preview": 1,
-   "label": "Linked Cash Flow",
-   "options": "Evoke Cash Flow"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-04-18 18:06:47.395926",
+ "modified": "2024-04-19 16:39:32.342722",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Store Rental Rates",

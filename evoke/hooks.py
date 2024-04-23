@@ -4,6 +4,7 @@ app_publisher = "Sean Baang"
 app_description = "Evoke App"
 app_email = "dev.seanbaang@gmail.com"
 app_license = "mit"
+app_logo_url = "/assets/evoke/images/erpnext-logo.svg"
 # required_apps = []
 
 # Includes in <head>
@@ -53,7 +54,20 @@ app_license = "mit"
 # ----------
 
 # automatically create page for each record of this doctype
-# website_generators = ["Web Page"]
+website_generators = ["Store"]
+
+website_context = {
+	"favicon": "/assets/evoke/images/erpnext-favicon.svg",
+	"splash_image": "/assets/evoke/images/erpnext-logo.svg",
+}
+
+# website_route_rules = [
+#     {"from_route": "/stores", "to_route": "Store"},
+# ]
+
+# standard_portal_menu_items = [
+# 	{"title": "Stores", "route": "/stores", "reference_doctype": "Store"}
+# ]
 
 # Jinja
 # ----------

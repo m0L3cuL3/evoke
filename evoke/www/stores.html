@@ -1,0 +1,28 @@
+{% extends "templates/web.html" %}
+
+{% block breadcrumbs %}
+	{% include "templates/includes/breadcrumbs.html" %}
+{% endblock %}
+
+{% block header %}
+<h3>{{ title }}</h3>
+<p>List of active stores</p>
+{% endblock %}
+
+{% block page_content %}
+<div class="my-4 row d-flex flex-column">
+    {% for store in stores %}
+        {% if store.is_active != 0 %}
+            <div class="py-2 col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ (store.title or store.name) |e }}</h5>
+                        <p class="card-text">{{ store.store_address }}</p>
+                        <a class="btn btn-primary" href="/{{ store.route |e }}">View Store Statistics</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

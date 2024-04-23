@@ -1,17 +1,21 @@
 from __future__ import unicode_literals, division
 import calendar
+from datetime import datetime
 import frappe
 from frappe import _
 
-# Obtains specific store's rental rates
-# Returns an array of objects
-def get_store_rental_rates(store_name):
+# Applies monthly rental rates of store
+# Returns float number
+def apply_monthly_rental_rates(store_name, initial_date):
     store_rental_rates = frappe.db.get_all("Store", fields=['store_name', 'store_rental_rates.rental_date', 'store_rental_rates.rental_rate'], filters=dict(store_name=store_name))
-    return store_rental_rates
-
-def get_rental_rates(store_name):
-    store_rental_rates = frappe.db.get_all("Store", fields=['store_name', 'store_rental_rates.rental_date', 'store_rental_rates.rental_rate', 'store_rental_rates.linked_cash_flow'], filters=dict(store_name=store_name))
-    return store_rental_rates
+    for rate_obj in reversed(store_rental_rates):
+        rental_date = rate_obj['rental_date']
+        if rental_date is not None:
+            if isinstance(rental_date, str):
+                rental_date = datetime.strptime(rental_date, "%Y-%m-%d").date()  # Convert rental_date to datetime object
+            if initial_date >= rental_date:
+                return rate_obj['rental_rate']
+    return None  # Return None if no matching rate is found
 
 # Obtains calculated operational expenses per store
 # Returns float number
@@ -62,5 +66,14 @@ def get_administrative_expenses_per_store(dcf):
     days_in_month = calendar.monthrange(year, month)[1]
 
     result = administrative_expense_result[0].administrative_expense / days_in_month
+
+    return result
+
+def get_total_of_transaction_type(dcf, store_name, type, transaction, conditions):
+    total_amount = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.store = '{store_name}' AND t2.type = '{type}' AND t2.transaction = '{transaction}' {conditions} """, as_dict=1)
+    result = total_amount[0].total_amount
+
+    if result == None:
+        result = 0
 
     return result

@@ -40,7 +40,6 @@ def get_data(filters):
     conditions = get_conditions(filters)
     data = []
     sql_result = frappe.db.sql("SELECT t2.store, t2.day_date, t2.transaction, t2.type, t2.amount, t2.user_remarks FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent" + conditions + "ORDER BY t2.day_date DESC, t2.store DESC, t2.transaction DESC", as_dict=1)
-    
     for row in sql_result:
         if row['transaction'] == 'Income':
             sales = row['amount']
@@ -63,10 +62,8 @@ def get_data(filters):
 
 def get_report_summary(filters):
     dcf = filters.get("evoke_cash_flow_filter")
-    # conditions = get_conditions(filters)
-    # data = frappe.db.sql("SELECT t2.store, t2.day_date, t2.transaction, t2.type, t2.amount, t2.user_remarks FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent" + conditions + "ORDER BY t2.day_date ASC, t2.store ASC, t2.transaction DESC", as_dict=1)
-
-    stores = frappe.db.sql(f"SELECT store_name FROM `tabStore`", as_dict=1)
+    cashflow_details = frappe.db.get_all('Evoke Cash Flow', fields=['date', 'month_year_entry'], filters=dict(name=dcf))
+    stores = frappe.db.get_all("Store", fields=['store_name', 'store_rental_rates.rental_date', 'store_rental_rates.rental_rate'], group_by='store_name')
     total_store_sales = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_sales_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.transaction = 'Income'""", as_dict=1)
     total_store_expenses = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_expenses_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.transaction = 'Expenses'""", as_dict=1)
     
@@ -74,15 +71,29 @@ def get_report_summary(filters):
     administrative_expense = utils.get_administrative_expenses(dcf)
     sales = total_store_sales[0].total_sales_amount
     expenses = total_store_expenses[0].total_expenses_amount
+
     rental = 0
 
-    # This currently uses the first rental rate only
     for row in stores:
-        store_rental_rates = utils.get_store_rental_rates(row['store_name'])
-        if store_rental_rates[0].rental_rate == None:
+        if utils.apply_monthly_rental_rates(row['store_name'], cashflow_details[0]['date']) == None:
             rental += 0
         else:
-            rental += store_rental_rates[0].rental_rate
+            rental += utils.apply_monthly_rental_rates(row['store_name'], cashflow_details[0]['date'])
+
+    if sales == None:
+        sales = 0
+
+    if expenses == None:
+        expenses = 0
+
+    if rental == None:
+        rental = 0
+    
+    if administrative_expense == None:
+        administrative_expense = 0
+
+    if operational_expenses == None:
+        operational_expenses = 0
 
     profit = sales - (expenses + rental + administrative_expense + operational_expenses)
 
@@ -111,14 +122,16 @@ def get_chart(filters):
         total_sales = total_store_sales[0].total_sales_amount
         total_expenses = total_store_expenses[0].total_expenses_amount
 
+        if total_expenses == None:
+            total_expenses = 0
+
         if total_sales == None:
             total_store_profit = 0
             total_sales = 0
         else:
             total_store_profit = total_sales - total_expenses
         
-        if total_expenses == None:
-            total_expenses = 0
+        
         
         profit.append(round(total_store_profit, 2))
         sales.append(round(total_sales, 2))

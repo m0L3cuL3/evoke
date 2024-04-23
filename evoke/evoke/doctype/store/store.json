@@ -14,6 +14,7 @@
   "store_address",
   "column_break_bmhr",
   "is_active",
+  "route",
   "store_rental_rates_tab",
   "store_rental_rates_section",
   "store_rental_rates"
@@ -69,11 +70,17 @@
    "fieldname": "store_rental_rates_tab",
    "fieldtype": "Tab Break",
    "label": "Store Rental Rates"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route"
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_published_field": "is_active",
  "links": [],
- "modified": "2024-04-18 15:16:50.981211",
+ "modified": "2024-04-22 17:23:12.964295",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Store",
@@ -94,6 +101,7 @@
   }
  ],
  "quick_entry": 1,
+ "route": "stores",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []
