@@ -26,7 +26,11 @@ def get_operational_expenses(dcf):
     operating_expense = operating_expense_result[0].operating_expenses_amount
     active_stores = active_stores_result[0].active_stores
 
-    operational_expenses = operating_expense / active_stores
+    if operating_expense == None:
+        operational_expenses = 0
+    else:
+        operational_expenses = operating_expense / active_stores
+    
     return operational_expenses
 
 # Obtains the grand total operational expenses
