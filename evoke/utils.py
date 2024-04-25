@@ -40,6 +40,9 @@ def get_total_operational_expenses(dcf):
 
     operating_expense = operating_expense_result[0].operating_expenses_amount
 
+    if operating_expense == None:
+        operating_expense = 0
+
     return operating_expense
 
 # Obtains the calculated total administrative expenses per store
