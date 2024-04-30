@@ -80,8 +80,15 @@ frappe.ui.form.on("Deposit", {
 							entry.transaction_date = item.day_date;
 							entry.store = item.store;
 							entry.amount = item.deposit;
+							// entry.accumulated_amount = item.accumulated_amount;
 							// set default deposited status
-							entry.is_deposited = 1;
+							if (item.accumulated_amount > 0) {
+								entry.accumulated_amount = item.accumulated_amount + item.deposit;
+								entry.is_deposited = 0;
+							} else {
+								entry.accumulated_amount = item.accumulated_amount;
+								entry.is_deposited = 1;
+							}
 						});
 						refresh_field("deposits");
 						refresh_field("depository_date");
@@ -125,9 +132,15 @@ frappe.ui.form.on("Deposit", {
 							entry.transaction_date = item.day_date;
 							entry.store = item.store;
 							entry.amount = item.deposit;
-
+							// entry.accumulated_amount = item.accumulated_amount;
 							// set default deposited status
-							entry.is_deposited = 1;
+							if (item.accumulated_amount > 0) {
+								entry.accumulated_amount = item.accumulated_amount + item.deposit;
+								entry.is_deposited = 0;
+							} else {
+								entry.accumulated_amount = item.accumulated_amount;
+								entry.is_deposited = 1;
+							}
 						});
 						refresh_field("deposits");
 						refresh_field("depository_date");
@@ -168,9 +181,15 @@ frappe.ui.form.on("Deposit", {
 							entry.transaction_date = item.day_date;
 							entry.store = item.store;
 							entry.amount = item.deposit;
-
+							entry.accumulated_amount = item.accumulated_amount;
 							// set default deposited status
-							entry.is_deposited = 1;
+							if (item.accumulated_amount > 0) {
+								entry.accumulated_amount = item.accumulated_amount + item.deposit;
+								entry.is_deposited = 0;
+							} else {
+								entry.accumulated_amount = item.accumulated_amount;
+								entry.is_deposited = 1;
+							}
 						});
 						refresh_field("deposits");
 						refresh_field("depository_date");

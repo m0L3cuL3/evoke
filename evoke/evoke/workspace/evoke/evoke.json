@@ -7,7 +7,7 @@
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
- "icon": "",
+ "icon": "heart-active",
  "idx": 0,
  "indicator_color": "",
  "is_hidden": 0,
@@ -102,7 +102,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-04-26 17:04:42.562442",
+ "modified": "2024-04-30 19:34:48.800618",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Evoke",

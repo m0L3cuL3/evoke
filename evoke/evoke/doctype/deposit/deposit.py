@@ -13,7 +13,7 @@ class Deposit(Document):
 		partial_found = False
     
 		for d in self.get('deposits'):
-			if d.accumulated_amount > 0 and not d.is_deposited:
+			if d.accumulated_amount and d.accumulated_amount > 0 and not d.is_deposited:
 				partial_found = True
 				d.is_deposited = 0
 				break  # Stop iterating once 'Partial' status is found

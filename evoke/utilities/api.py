@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from frappe.utils import add_to_date
 import frappe
 
 @frappe.whitelist()
@@ -67,8 +68,37 @@ def get_deposits_per_store(cash_flow_entry, transaction_date):
                     incentives = sub_row['amount']
                     break
 
+            store_deposits = frappe.db.sql(f"""
+                SELECT
+                    t1.name,
+                    t1.cash_flow_entry,
+                    t1.depository_date,
+                    t1.transaction_date,
+                    t2.store,
+                    t2.amount,
+                    t2.accumulated_amount
+                FROM `tabDeposit` AS t1
+                JOIN `tabCredited Deposits` AS t2
+                ON t1.name = t2.parent
+                WHERE t1.cash_flow_entry = '{cash_flow_entry}'
+                AND t1.depository_date = '{transaction_date}'
+                AND t2.store = '{row['store']}'
+            """, as_dict=1)
+
+            if store_deposits:
+                accumulated_amount = store_deposits[0].accumulated_amount
+            else:
+                accumulated_amount = 0
+
             deposit = sales - incentives
-            r = {'day_date': row['day_date'], 'store': row['store'], 'deposit': deposit}
+            r = {
+                'day_date': row['day_date'], 
+                'store': row['store'], 
+                'accumulated_amount': accumulated_amount, 
+                'deposit': deposit
+            }
             deposits.append(r)
+
+    print(deposits)
 
     return deposits
