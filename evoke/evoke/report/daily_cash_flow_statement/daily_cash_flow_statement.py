@@ -64,8 +64,22 @@ def get_report_summary(filters):
     dcf = filters.get("evoke_cash_flow_filter")
     cashflow_details = frappe.db.get_all('Evoke Cash Flow', fields=['date', 'month_year_entry'], filters=dict(name=dcf))
     stores = frappe.db.get_all("Store", fields=['store_name', 'store_rental_rates.rental_date', 'store_rental_rates.rental_rate'], group_by='store_name')
-    total_store_sales = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_sales_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.transaction = 'Income'""", as_dict=1)
-    total_store_expenses = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_expenses_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.transaction = 'Expenses'""", as_dict=1)
+    total_store_sales = frappe.db.sql(f"""
+        SELECT 
+            SUM(t2.amount) AS total_sales_amount 
+        FROM `tabEvoke Cash Flow` AS t1 
+        JOIN `tabDaily Cash Flow Item` AS t2 
+        ON t1.name = t2.parent 
+        WHERE t1.name = '{dcf}' 
+        AND t2.transaction = 'Income'""", as_dict=1)
+    total_store_expenses = frappe.db.sql(f"""
+        SELECT 
+            SUM(t2.amount) AS total_expenses_amount 
+        FROM `tabEvoke Cash Flow` AS t1 
+        JOIN `tabDaily Cash Flow Item` AS t2 
+        ON t1.name = t2.parent 
+        WHERE t1.name = '{dcf}' 
+        AND t2.transaction = 'Expenses'""", as_dict=1)
     
     operational_expenses = utils.get_total_operational_expenses(dcf)
     administrative_expense = utils.get_administrative_expenses(dcf)
@@ -116,8 +130,24 @@ def get_chart(filters):
     
     for row in data:
         labels.append(row['store_name'])
-        total_store_sales = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_sales_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.store = '{row['store_name']}' AND t2.transaction = 'Income'""", as_dict=1)
-        total_store_expenses = frappe.db.sql(f"""SELECT SUM(t2.amount) AS total_expenses_amount FROM `tabEvoke Cash Flow` AS t1 JOIN `tabDaily Cash Flow Item` AS t2 ON t1.name = t2.parent WHERE t1.name = '{dcf}' AND t2.store = '{row['store_name']}' AND t2.transaction = 'Expenses'""", as_dict=1)
+        total_store_sales = frappe.db.sql(f"""
+            SELECT 
+                SUM(t2.amount) AS total_sales_amount 
+            FROM `tabEvoke Cash Flow` AS t1 
+            JOIN `tabDaily Cash Flow Item` AS t2 
+            ON t1.name = t2.parent 
+            WHERE t1.name = '{dcf}' 
+            AND t2.store = '{row['store_name']}' 
+            AND t2.transaction = 'Income'""", as_dict=1)
+        total_store_expenses = frappe.db.sql(f"""
+            SELECT 
+                SUM(t2.amount) AS total_expenses_amount 
+            FROM `tabEvoke Cash Flow` AS t1 
+            JOIN `tabDaily Cash Flow Item` AS t2 
+            ON t1.name = t2.parent 
+            WHERE t1.name = '{dcf}' 
+            AND t2.store = '{row['store_name']}' 
+            AND t2.transaction = 'Expenses'""", as_dict=1)
         
         total_sales = total_store_sales[0].total_sales_amount
         total_expenses = total_store_expenses[0].total_expenses_amount

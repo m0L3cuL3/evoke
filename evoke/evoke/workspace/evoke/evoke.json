@@ -7,9 +7,9 @@
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
- "icon": "heart-active",
+ "icon": "",
  "idx": 0,
- "indicator_color": "green",
+ "indicator_color": "",
  "is_hidden": 0,
  "label": "Evoke",
  "links": [
@@ -46,25 +46,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Custom Accounting Modules",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Cash Flow",
-   "link_count": 0,
-   "link_to": "Evoke Cash Flow",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Reports",
    "link_count": 2,
    "link_type": "DocType",
@@ -90,9 +71,38 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Custom Accounting Modules",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cash Flow",
+   "link_count": 0,
+   "link_to": "Evoke Cash Flow",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Depository",
+   "link_count": 0,
+   "link_to": "Deposit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-04-17 17:01:09.682040",
+ "modified": "2024-04-26 17:04:42.562442",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Evoke",

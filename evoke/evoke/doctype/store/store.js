@@ -6,7 +6,7 @@ frappe.ui.form.on("Store Rental Rates", {
 		var child = locals[cdt][cdn];
 		frappe
 			.call({
-				method: "evoke.api.get_month_and_year",
+				method: "evoke.utilities.api.get_month_and_year",
 				args: { date: child.rental_date },
 			})
 			.done((r) => {

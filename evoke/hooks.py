@@ -11,7 +11,7 @@ app_logo_url = "/assets/evoke/images/erpnext-logo.svg"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/evoke/css/evoke.css"
+# app_include_css = "/assets/evoke/css/evoke_theme.css"
 # app_include_js = "/assets/evoke/js/evoke.js"
 
 # include js, css files in header of web template

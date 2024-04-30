@@ -6,12 +6,11 @@ frappe.ui.form.on("Evoke Cash Flow", {
 		frm.set_df_property("date", "read_only", frm.is_new() ? 0 : 1);
 	},
 	date: function (frm) {
-		console.log(frm);
 		let date = frm.doc.date;
 		if (date && frm.doc.__islocal) {
 			frappe
 				.call({
-					method: "evoke.api.get_days_of_month",
+					method: "evoke.utilities.api.get_days_of_month",
 					args: { date: date },
 				})
 				.done((r) => {
@@ -24,7 +23,7 @@ frappe.ui.form.on("Evoke Cash Flow", {
 				});
 			frappe
 				.call({
-					method: "evoke.api.get_month_and_year",
+					method: "evoke.utilities.api.get_month_and_year",
 					args: { date: date },
 				})
 				.done((r) => {

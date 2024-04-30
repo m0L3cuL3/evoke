@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:DEPO-{depository_date}",
+ "creation": "2024-04-26 12:05:18.161627",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "cash_flow_entry",
+  "status",
+  "column_break_sdrd",
+  "depository_date",
+  "transaction_date",
+  "section_break_jabn",
+  "deposits",
+  "section_break_ykhb",
+  "grand_total_amount",
+  "column_break_xpnh",
+  "grand_total_accumulated_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "cash_flow_entry",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cash Flow Entry",
+   "options": "Evoke Cash Flow",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_jabn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "deposits",
+   "fieldtype": "Table",
+   "label": "Deposit",
+   "options": "Credited Deposits"
+  },
+  {
+   "fieldname": "column_break_sdrd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Starting date of deposit.",
+   "fieldname": "depository_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Depository Date",
+   "reqd": 1
+  },
+  {
+   "description": "Starting date of transaction.",
+   "fieldname": "transaction_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Transaction Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "grand_total_amount",
+   "fieldtype": "Currency",
+   "label": "Grand Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total_accumulated_amount",
+   "fieldtype": "Currency",
+   "label": "Grand Total Accumulated Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ykhb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_xpnh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "This is set automatically upon saving the document.",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nCompleted\nPartial"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-04-30 16:35:25.825447",
+ "modified_by": "Administrator",
+ "module": "Evoke",
+ "name": "Deposit",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Green",
+   "title": "Completed"
+  },
+  {
+   "color": "Red",
+   "title": "Partial"
+  }
+ ]
+}
