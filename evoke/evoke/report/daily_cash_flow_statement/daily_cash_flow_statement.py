@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 import frappe
-import evoke.utils as utils
+from datetime import datetime
+
+from evoke.utilities.cash_flow.cash_flow import CashFlowUtils as cashflow_utils
+from evoke.utilities.store.store import StoreUtils as store_utils
 
 def execute(filters=None):
     data = get_data(filters)
@@ -8,13 +11,11 @@ def execute(filters=None):
     chart = get_chart(filters)
     report_summary = get_report_summary(filters)
 
-    # message = [
-    #     f"The letters '<b>cats</b>' in numbers is <span style='color:Red;'>2287</span>",
-    #     f"<br>",
-    #     f"The letters '<b>dogs</b>' in numbers is <span style='color:Blue;'>3647</span>"
-    # ]
-    
     return columns, data, None, chart, report_summary
+
+def get_filters(filters):
+    if filters.get('date_from') and filters.get('date_to'):
+        return [['day_date', 'between', [filters.get('date_from'), filters.get('date_to')]]]
 
 def get_columns():
     columns = [
@@ -29,15 +30,9 @@ def get_columns():
    
     return columns
 
-def get_conditions(filters):
-    if filters.get("evoke_cash_flow_filter"):
-        dcf = filters.get("evoke_cash_flow_filter")
-        conditions = f" WHERE t1.name = '{dcf}' "
-    
-    return conditions
-
 def get_data(filters):
     data = []
+    filters = get_filters(filters)
     result = frappe.db.get_all(
         'Evoke Cash Flow',
         fields=[
@@ -48,9 +43,7 @@ def get_data(filters):
             'daily_entries.amount',
             'daily_entries.user_remarks'
         ],
-        filters=[
-            # ['name', '=', filters.get('evoke_cash_flow_filter')]
-        ],
+        filters=filters,
         order_by='day_date DESC, store DESC, transaction DESC'
     )
 
@@ -73,9 +66,7 @@ def get_data(filters):
 
     return data
     
-
 def get_report_summary(filters):
-    dcf = filters.get("evoke_cash_flow_filter")
     cashflow_details = frappe.db.get_all(
         'Evoke Cash Flow', 
         fields=[
@@ -83,9 +74,11 @@ def get_report_summary(filters):
             'month_year_entry'
         ], 
         filters=[
-            ['name', '=', dcf]
+            # ['name', '=', month_year]
+            ['day_date', 'between', [filters.get('date_from'), filters.get('date_to')]]
         ]
     )
+
     stores = frappe.db.get_all(
         "Store", 
         fields=[
@@ -103,8 +96,8 @@ def get_report_summary(filters):
             'sum(amount) as total_sales_amount'
         ],
         filters=[
-            ['name', '=', dcf],
-            ['transaction', '=', 'Income']
+            ['transaction', '=', 'Income'],
+            ['day_date', 'between', [filters.get('date_from'), filters.get('date_to')]]
         ]
     )
 
@@ -115,23 +108,23 @@ def get_report_summary(filters):
             'sum(amount) as total_expenses_amount'
         ],
         filters=[
-            ['name', '=', dcf],
-            ['transaction', '=', 'Expenses']
+            ['transaction', '=', 'Expenses'],
+            ['day_date', 'between', [filters.get('date_from'), filters.get('date_to')]]
         ]
     )
     
-    operational_expenses = utils.get_total_operational_expenses(dcf)
-    administrative_expense = utils.get_administrative_expenses(dcf)
+    operational_expenses = cashflow_utils.get_total_operational_expenses(filters.get('date_from'), filters.get('date_to'))
+    administrative_expense = cashflow_utils.get_administrative_expenses(filters.get('date_from'), filters.get('date_to'))
     sales = store_sales[0].total_sales_amount
     expenses = store_expenses[0].total_expenses_amount
 
     rental = 0
 
     for row in stores:
-        if utils.apply_monthly_rental_rates(row['store_name'], cashflow_details[0]['date']) == None:
+        if store_utils.apply_monthly_rental_rates(row['store_name'], cashflow_details[0]['date']) == None:
             rental += 0
         else:
-            rental += utils.apply_monthly_rental_rates(row['store_name'], cashflow_details[0]['date'])
+            rental += store_utils.apply_monthly_rental_rates(row['store_name'], cashflow_details[0]['date'])
 
     if sales == None:
         sales = 0
@@ -160,7 +153,6 @@ def get_report_summary(filters):
     return report_summary
 
 def get_chart(filters):
-    dcf = filters.get("evoke_cash_flow_filter")
     stores = frappe.db.get_all(
         'Store',
         fields=[
@@ -184,7 +176,7 @@ def get_chart(filters):
                 'sum(amount) as total_sales_amount'
             ],
             filters=[
-                ['name', '=', dcf],
+                # ['name', '=', dcf],
                 ['store', '=', row['store_name']],
                 ['transaction', '=', 'Income']
             ]
@@ -197,12 +189,12 @@ def get_chart(filters):
                 'sum(amount) as total_expenses_amount'
             ],
             filters=[
-                ['name', '=', dcf],
+                # ['name', '=', dcf],
                 ['store', '=', row['store_name']],
                 ['transaction', '=', 'Expenses']
             ]
         )
-        
+
         total_sales = store_sales[0].total_sales_amount
         total_expenses = store_expenses[0].total_expenses_amount
 
