@@ -4,10 +4,15 @@
 frappe.query_reports["Daily Cash Flow Statement"] = {
 	filters: [
 		{
-			fieldname: "evoke_cash_flow_filter",
-			label: "Evoke Cash Flow",
-			fieldtype: "Link",
-			options: "Evoke Cash Flow",
+			fieldname: "date_from",
+			label: "Date From",
+			fieldtype: "Date",
+			reqd: 1,
+		},
+		{
+			fieldname: "date_to",
+			label: "Date To",
+			fieldtype: "Date",
 			reqd: 1,
 		},
 	],
