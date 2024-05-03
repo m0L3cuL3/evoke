@@ -7,13 +7,39 @@ frappe.query_reports["Depository Statement"] = {
 			fieldname: "date_from",
 			label: "Date From",
 			fieldtype: "Date",
+			reqd: 1,
 		},
 		{
 			fieldname: "date_to",
 			label: "Date To",
 			fieldtype: "Date",
+			reqd: 1,
 		},
 	],
+	onload: function (report) {
+		report.page.add_inner_button(
+			__("Daily Cash Flow Statement"),
+			function () {
+				var filters = report.get_values();
+				frappe.set_route("query-report", "Daily Cash Flow Statement", {
+					date_from: filters.date_from,
+					date_to: filters.date_to,
+				});
+			},
+			"Reports"
+		);
+		report.page.add_inner_button(
+			__("Profit and Loss Statement"),
+			function () {
+				var filters = report.get_values();
+				frappe.set_route("query-report", "Profit and Loss Statement", {
+					date_from: filters.date_from,
+					date_to: filters.date_to,
+				});
+			},
+			"Reports"
+		);
+	},
 	formatter: function (value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		if (column.fieldname == "is_deposited") {

@@ -12,8 +12,7 @@ def execute(filters=None):
 def get_filters(filters):
 	if filters.get('date_from') and filters.get('date_to'):
 		return [['deposit_date', 'between', [filters.get('date_from'), filters.get('date_to')]]]
-	else:
-		return []
+
 def get_columns():
 	columns = [
 		{ 'fieldname': 'cash_flow_entry', 'label': 'Cash Flow Entry', 'width': 130 },
@@ -44,10 +43,10 @@ def get_data(filters):
 			'deposits.amount_credited',
 			'deposits.accumulated_amount',
 			'deposits.is_deposited'
-			], 
-			filters=filter,
-			order_by='deposit_date desc, store desc'
-		)
+		], 
+		filters=filter,
+		order_by='deposit_date desc, store desc'
+	)
 
 	for row in deposits:
 
