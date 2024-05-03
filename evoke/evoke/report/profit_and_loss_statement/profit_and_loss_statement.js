@@ -1,13 +1,6 @@
 frappe.query_reports["Profit and Loss Statement"] = {
 	filters: [
 		{
-			fieldname: "evoke_cash_flow_filter",
-			label: "Evoke Cash Flow",
-			fieldtype: "Link",
-			options: "Evoke Cash Flow",
-			reqd: 1,
-		},
-		{
 			fieldname: "evoke_date_select_filter",
 			label: "Date Filter Type",
 			fieldtype: "Select",
@@ -73,14 +66,16 @@ frappe.query_reports["Profit and Loss Statement"] = {
 			},
 		},
 		{
-			fieldname: "evoke_date_from",
+			fieldname: "date_from",
 			label: "Date From",
 			fieldtype: "Date",
+			reqd: 1,
 		},
 		{
-			fieldname: "evoke_date_to",
+			fieldname: "date_to",
 			label: "Date To",
 			fieldtype: "Date",
+			reqd: 1,
 		},
 	],
 	onload: function (report) {
@@ -89,7 +84,19 @@ frappe.query_reports["Profit and Loss Statement"] = {
 			function () {
 				var filters = report.get_values();
 				frappe.set_route("query-report", "Daily Cash Flow Statement", {
-					evoke_cash_flow_filter: filters.evoke_cash_flow_filter,
+					date_from: filters.date_from,
+					date_to: filters.date_to,
+				});
+			},
+			"Reports"
+		);
+		report.page.add_inner_button(
+			__("Depository Statement"),
+			function () {
+				var filters = report.get_values();
+				frappe.set_route("query-report", "Depository Statement", {
+					date_from: filters.date_from,
+					date_to: filters.date_to,
 				});
 			},
 			"Reports"
