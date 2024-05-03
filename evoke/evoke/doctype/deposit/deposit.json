@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:DEPO-{depository_date}",
  "creation": "2024-04-26 12:05:18.161627",
@@ -99,7 +100,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-02 15:48:49.299833",
+ "modified": "2024-05-03 13:11:28.221088",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Deposit",

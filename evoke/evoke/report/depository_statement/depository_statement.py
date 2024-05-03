@@ -5,26 +5,32 @@ import frappe
 
 
 def execute(filters=None):
-	data = get_data()
+	data = get_data(filters)
 	columns = get_columns()
 	return columns, data
 
+def get_filters(filters):
+	if filters.get('date_from') and filters.get('date_to'):
+		return [['deposit_date', 'between', [filters.get('date_from'), filters.get('date_to')]]]
+	else:
+		return []
 def get_columns():
 	columns = [
-		{ 'fieldname': 'cash_flow_entry', 'label': 'Cash Flow Entry', 'width': 150 },
+		{ 'fieldname': 'cash_flow_entry', 'label': 'Cash Flow Entry', 'width': 130 },
 		{ 'fieldname': 'store', 'label': 'Store', 'width': 150 },
-		{ 'fieldname': 'depository_date', 'label': 'Depository Date', 'width': 150 },
-		{ 'fieldname': 'transaction_date', 'label': 'Transaction Date', 'width': 150 },
-		{ 'fieldname': 'over_short_amount', 'label': 'Over / Short', 'fieldtype': 'Currency', 'width': 150 },
+		{ 'fieldname': 'depository_date', 'label': 'Depository Date', 'width': 125 },
+		{ 'fieldname': 'transaction_date', 'label': 'Transaction Date', 'width': 125 },
+		{ 'fieldname': 'over_short_amount', 'label': 'Over / Short', 'fieldtype': 'Currency', 'width': 100 },
 		{ 'fieldname': 'for_deposit_amount', 'fieldtype': 'Currency', 'label': 'For Deposit', 'width': 150 },
-		{ 'fieldname': 'amount_credited', 'fieldtype': 'Currency', 'label': 'Amount Credited to Account', 'width': 150 },
-		{ 'fieldname': 'accumulated_amount', 'fieldtype': 'Currency', 'label': 'Accumulated Amount', 'width': 150 },
-		{ 'fieldname': 'is_deposited', 'label': 'Is Deposited', 'align': 'center', 'width': 150 }
+		{ 'fieldname': 'amount_credited', 'fieldtype': 'Currency', 'label': 'Amount Credited to Account', 'width': 140 },
+		{ 'fieldname': 'accumulated_amount', 'fieldtype': 'Currency', 'label': 'Accumulated Amount', 'width': 140 },
+		{ 'fieldname': 'is_deposited', 'label': 'Is Deposited', 'align': 'center', 'width': 140 }
 	]
 
 	return columns
 
-def get_data():
+def get_data(filters):
+	filter = get_filters(filters)
 	data = []
 	deposits = frappe.db.get_all(
 		'Deposit', 
@@ -39,7 +45,7 @@ def get_data():
 			'deposits.accumulated_amount',
 			'deposits.is_deposited'
 			], 
-			filters=[],
+			filters=filter,
 			order_by='deposit_date desc, store desc'
 		)
 
