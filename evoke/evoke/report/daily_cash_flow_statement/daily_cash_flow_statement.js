@@ -22,7 +22,19 @@ frappe.query_reports["Daily Cash Flow Statement"] = {
 			function () {
 				var filters = report.get_values();
 				frappe.set_route("query-report", "Profit and Loss Statement", {
-					evoke_cash_flow_filter: filters.evoke_cash_flow_filter,
+					date_from: filters.date_from,
+					date_to: filters.date_to,
+				});
+			},
+			"Reports"
+		);
+		report.page.add_inner_button(
+			__("Depository Statement"),
+			function () {
+				var filters = report.get_values();
+				frappe.set_route("query-report", "Depository Statement", {
+					date_from: filters.date_from,
+					date_to: filters.date_to,
 				});
 			},
 			"Reports"

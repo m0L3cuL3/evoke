@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 import frappe
-from datetime import datetime
 
 from evoke.utilities.cash_flow.cash_flow import CashFlowUtils as cashflow_utils
 from evoke.utilities.store.store import StoreUtils as store_utils
