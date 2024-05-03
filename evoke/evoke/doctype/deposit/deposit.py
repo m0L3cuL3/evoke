@@ -8,6 +8,22 @@ from frappe.model.document import Document
 class Deposit(Document):
 	def validate(self):
 		self.set_status()
+		self.check_amount_found()
+
+	def check_amount_found(self):
+		row = None
+
+		for d in self.get('deposits'):
+			if d.amount_credited or d.accumulated_amount:
+				pass
+			else:
+				row = d.idx
+				break
+
+		if row is not None:
+			frappe.throw('Amount not found in row #{}'.format(row))
+				
+
 
 	def set_status(self):
 		partial_found = False

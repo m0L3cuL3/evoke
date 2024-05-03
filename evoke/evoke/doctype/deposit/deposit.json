@@ -15,6 +15,8 @@
   "deposits",
   "section_break_ykhb",
   "grand_total_amount",
+  "column_break_jygj",
+  "grand_total_amount_credited",
   "column_break_xpnh",
   "grand_total_accumulated_amount"
  ],
@@ -60,13 +62,13 @@
   {
    "fieldname": "grand_total_amount",
    "fieldtype": "Currency",
-   "label": "Grand Total Amount",
+   "label": "Total Amount",
    "read_only": 1
   },
   {
    "fieldname": "grand_total_accumulated_amount",
    "fieldtype": "Currency",
-   "label": "Grand Total Accumulated Amount",
+   "label": "Total Accumulated Amount",
    "read_only": 1
   },
   {
@@ -83,11 +85,21 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "\nCompleted\nPartial"
+  },
+  {
+   "fieldname": "column_break_jygj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total_amount_credited",
+   "fieldtype": "Currency",
+   "label": "Total Amount Credited",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-30 16:35:25.825447",
+ "modified": "2024-05-02 15:48:49.299833",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Deposit",

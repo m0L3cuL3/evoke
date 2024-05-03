@@ -2,8 +2,6 @@
 // For license information, please see license.txt
 
 function updateTableRowStyle(frm, rows) {
-	let partial_found = false;
-
 	for (let i = 1; i < rows.length; i++) {
 		rows[i].style.backgroundColor = ""; // Reset color for all rows
 		const deposit = frm.doc.deposits[i - 1];
@@ -16,44 +14,38 @@ function updateTableRowStyle(frm, rows) {
 	}
 }
 
+function updateGrandTotal(frm) {
+	let deposits = frm.doc.deposits;
+	let grand_total_amount = 0;
+	let grand_total_amount_credited = 0;
+	let grand_total_accumulated_amount = 0;
+
+	deposits.forEach((item) => {
+		grand_total_amount += item.for_deposit_amount;
+		grand_total_amount_credited += item.amount_credited;
+		grand_total_accumulated_amount += item.accumulated_amount;
+	});
+
+	frm.doc.grand_total_amount = grand_total_amount;
+	frm.doc.grand_total_amount_credited = grand_total_amount - grand_total_amount_credited;
+	frm.doc.grand_total_accumulated_amount = grand_total_accumulated_amount;
+	refresh_field("grand_total_amount");
+	refresh_field("grand_total_amount_credited");
+	refresh_field("grand_total_accumulated_amount");
+}
+
 frappe.ui.form.on("Deposit", {
 	refresh: function (frm) {
-		let deposits = frm.doc.deposits;
-		let grand_total_amount = 0;
-		let grand_total_accumulated_amount = 0;
-
 		var rows = document.getElementsByClassName("grid-row");
 
 		updateTableRowStyle(frm, rows);
-
-		deposits.forEach((item) => {
-			grand_total_amount += item.amount;
-			grand_total_accumulated_amount += item.accumulated_amount;
-		});
-
-		frm.doc.grand_total_amount = grand_total_amount - grand_total_accumulated_amount;
-		frm.doc.grand_total_accumulated_amount = grand_total_accumulated_amount;
-		refresh_field("grand_total_amount");
-		refresh_field("grand_total_accumulated_amount");
+		updateGrandTotal(frm);
 	},
 	validate: function (frm) {
-		let deposits = frm.doc.deposits;
-		let grand_total_amount = 0;
-		let grand_total_accumulated_amount = 0;
-
 		var rows = document.getElementsByClassName("grid-row");
 
 		updateTableRowStyle(frm, rows);
-
-		deposits.forEach((item) => {
-			grand_total_amount += item.amount;
-			grand_total_accumulated_amount += item.accumulated_amount;
-		});
-
-		frm.doc.grand_total_amount = grand_total_amount - grand_total_accumulated_amount;
-		frm.doc.grand_total_accumulated_amount = grand_total_accumulated_amount;
-		refresh_field("grand_total_amount");
-		refresh_field("grand_total_accumulated_amount");
+		updateGrandTotal(frm);
 	},
 	cash_flow_entry: function (frm, cdt, cdn) {
 		let cashflow = frm.doc.cash_flow_entry;
@@ -79,11 +71,12 @@ frappe.ui.form.on("Deposit", {
 							entry.deposit_date = frm.doc.depository_date;
 							entry.transaction_date = item.day_date;
 							entry.store = item.store;
-							entry.amount = item.deposit;
+							entry.for_deposit_amount = item.for_deposit_amount;
 							// entry.accumulated_amount = item.accumulated_amount;
 							// set default deposited status
 							if (item.accumulated_amount > 0) {
-								entry.accumulated_amount = item.accumulated_amount + item.deposit;
+								entry.accumulated_amount =
+									item.accumulated_amount + item.for_deposit_amount;
 								entry.is_deposited = 0;
 							} else {
 								entry.accumulated_amount = item.accumulated_amount;
@@ -131,11 +124,12 @@ frappe.ui.form.on("Deposit", {
 							entry.deposit_date = frm.doc.depository_date;
 							entry.transaction_date = item.day_date;
 							entry.store = item.store;
-							entry.amount = item.deposit;
+							entry.for_deposit_amount = item.for_deposit_amount;
 							// entry.accumulated_amount = item.accumulated_amount;
 							// set default deposited status
 							if (item.accumulated_amount > 0) {
-								entry.accumulated_amount = item.accumulated_amount + item.deposit;
+								entry.accumulated_amount =
+									item.accumulated_amount + item.for_deposit_amount;
 								entry.is_deposited = 0;
 							} else {
 								entry.accumulated_amount = item.accumulated_amount;
@@ -176,15 +170,15 @@ frappe.ui.form.on("Deposit", {
 					callback: (r) => {
 						r.message.forEach((item) => {
 							let entry = frm.add_child("deposits");
-
 							entry.deposit_date = frm.doc.depository_date;
 							entry.transaction_date = item.day_date;
 							entry.store = item.store;
-							entry.amount = item.deposit;
-							entry.accumulated_amount = item.accumulated_amount;
+							entry.for_deposit_amount = item.for_deposit_amount;
+							// entry.accumulated_amount = item.accumulated_amount;
 							// set default deposited status
 							if (item.accumulated_amount > 0) {
-								entry.accumulated_amount = item.accumulated_amount + item.deposit;
+								entry.accumulated_amount =
+									item.accumulated_amount + item.for_deposit_amount;
 								entry.is_deposited = 0;
 							} else {
 								entry.accumulated_amount = item.accumulated_amount;

@@ -75,7 +75,8 @@ def get_deposits_per_store(cash_flow_entry, transaction_date):
                     t1.depository_date,
                     t1.transaction_date,
                     t2.store,
-                    t2.amount,
+                    t2.over_short_amount,              
+                    t2.for_deposit_amount,
                     t2.accumulated_amount
                 FROM `tabDeposit` AS t1
                 JOIN `tabCredited Deposits` AS t2
@@ -86,19 +87,28 @@ def get_deposits_per_store(cash_flow_entry, transaction_date):
             """, as_dict=1)
 
             if store_deposits:
+                over_short_amount = store_deposits[0].over_short_amount
                 accumulated_amount = store_deposits[0].accumulated_amount
             else:
+                over_short_amount = 0
                 accumulated_amount = 0
 
             deposit = sales - incentives
+
+            if over_short_amount < 0:
+                deposit = deposit + abs(over_short_amount)
+            else:
+                deposit = deposit - over_short_amount
+
+            
+
             r = {
                 'day_date': row['day_date'], 
                 'store': row['store'], 
+                'over_short_amount': over_short_amount,
                 'accumulated_amount': accumulated_amount, 
-                'deposit': deposit
+                'for_deposit_amount': deposit
             }
             deposits.append(r)
-
-    print(deposits)
 
     return deposits
