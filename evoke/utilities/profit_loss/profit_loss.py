@@ -45,7 +45,6 @@ class ProfitLossUtils:
         else:
             return 0
 
-
     def get_operational_expenses(filters):
         operating_expense_result = frappe.db.get_all(
             'Evoke Cash Flow',
