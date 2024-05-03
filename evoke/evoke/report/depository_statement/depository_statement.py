@@ -75,7 +75,4 @@ def get_data(filters):
 				'is_deposited': 'No'
 			})
 			
-
-		
-
 	return data
