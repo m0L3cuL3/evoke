@@ -11,16 +11,20 @@ def execute(filters=None):
 
 def get_columns():
     columns = [
+        { "fieldname": "profit_loss", "label": "Profit / Loss", "fieldtype": "Currency", "width": 150 },
         { "fieldname": "store_name", "label": "Store", "width": 150 },
+        { "fieldname": "sales", "label": "Total Sales", "fieldtype": "Currency", "width": 150 },
+        { "fieldname": "expenses", "label": "Total Expenses", "fieldtype": "Currency", "width": 150 },
+        { "fieldname": "rentals", "label": "Total Rental Expenses", "fieldtype": "Currency", "width": 150 },
+        { "fieldname": "administrative", "label": "Total Administraive Expenses", "fieldtype": "Currency", "width": 150 },
+        { "fieldname": "operational", "label": "Total Operational Expenses", "fieldtype": "Currency", "width": 150 },
         { "fieldname": "incentives", "label": "Incentives", "fieldtype": "Currency", "width": 150 },
         { "fieldname": "marketing", "label": "Marketing", "fieldtype": "Currency", "width": 150 },
         { "fieldname": "operating_expenses", "label": "Operating Expenses", "fieldtype": "Currency", "width": 150 },
         { "fieldname": "payroll", "label": "Payroll", "fieldtype": "Currency", "width": 150 },
-        { "fieldname": "product_cost", "label": "Product Cost", "fieldtype": "Currency", "width": 150 },
-        { "fieldname": "sales", "label": "Sales", "fieldtype": "Currency", "width": 150 },
-        { "fieldname": "profit_loss", "label": "Profit / Loss", "fieldtype": "Currency", "width": 150 },
+        { "fieldname": "product_cost", "label": "Product Cost", "fieldtype": "Currency", "width": 150 }
     ]
-   
+
     return columns
 
 def get_data(filters):
@@ -74,11 +78,11 @@ def get_data(filters):
         )
 
         rental = 0
-        administrative = profit_loss_utils.get_administrative_expenses_per_store(filters)
+        administrative_expense = profit_loss_utils.get_administrative_expenses_per_store(filters)
         operational_expenses = profit_loss_utils.get_operational_expenses(filters)
 
-        total_sales = store_sales[0].total_sales_amount
-        total_expenses = store_expenses[0].total_expenses_amount
+        sales = store_sales[0].total_sales_amount
+        expenses = store_expenses[0].total_expenses_amount
         total_incentives = profit_loss_utils.get_total_of_transaction_type(
             row['store_name'],
             'Incentives', 
@@ -110,16 +114,16 @@ def get_data(filters):
             filters
         )
 
-        if total_sales == None:
-            total_sales = 0
-            administrative = 0
+        if sales == None:
+            sales = 0
+            administrative_expense = 0
             operational_expenses = 0
         
-        if total_expenses == None:
-            total_expenses = 0
+        if expenses == None:
+            expenses = 0
 
         if row['store_name'] == 'Online Sales':
-            administrative = 0
+            administrative_expense = 0
             operational_expenses = 0
 
         if cashflow_details:
@@ -131,30 +135,22 @@ def get_data(filters):
             rental += 0
         
 
-        profit_loss = total_sales - (total_expenses + rental + administrative + operational_expenses)
+        total_expenses = expenses + rental + administrative_expense + operational_expenses
+        profit_loss = sales - total_expenses
 
-        if total_sales > total_expenses:
-            data.append({ 
-                'store_name': row['store_name'], 
-                'incentives': round(total_incentives, 2), 
-                'marketing': round(total_marketing, 2), 
-                'operating_expenses': round(total_operating_expense, 2), 
-                'payroll': round(total_payroll, 2), 
-                'product_cost': round(total_product_cost, 2), 
-                'sales': round(total_sales, 2),
-                'profit_loss': round(profit_loss, 2) 
-            })
-        else:
-            data.append({ 
-                'store_name': row['store_name'], 
-                'incentives': round(total_incentives, 2), 
-                'marketing': round(total_marketing, 2), 
-                'operating_expenses': round(total_operating_expense, 2), 
-                'payroll': round(total_payroll, 2), 
-                'product_cost': round(total_product_cost, 2), 
-                'sales': round(total_sales, 2),
-                'profit_loss': -abs(round(profit_loss, 2)) 
-            })
+        data.append({ 
+            'store_name': row['store_name'], 
+            'sales': round(sales, 2),
+            'expenses': round(total_expenses, 2),
+            'rentals': round(rental, 2),
+            'administrative': round(administrative_expense, 2),
+            'operational': round(operational_expenses, 2),
+            'incentives': round(total_incentives, 2), 
+            'marketing': round(total_marketing, 2), 
+            'operating_expenses': round(total_operating_expense, 2), 
+            'payroll': round(total_payroll, 2), 
+            'product_cost': round(total_product_cost, 2), 
+            'profit_loss': round(profit_loss, 2) if sales > expenses else -abs(round(profit_loss, 2))
+        })
 
     return data
-    

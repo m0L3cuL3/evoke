@@ -102,6 +102,15 @@ frappe.query_reports["Profit and Loss Statement"] = {
 			"Reports"
 		);
 	},
+	get_datatable_options(options) {
+		console.log(options);
+		// Modify DataTable options here if needed
+		options.sticky = {
+			headers: true,
+			columns: 2, // Number of columns to freeze
+		};
+		return options;
+	},
 	formatter: function (value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		if (column.fieldname == "profit_loss") {
@@ -118,6 +127,10 @@ frappe.query_reports["Profit and Loss Statement"] = {
 
 		if (column.fieldname == "sales") {
 			value = `<b style="color:limegreen">${value}</b>`;
+		}
+
+		if (column.fieldname == "expenses") {
+			value = `<b style="color:red">${value}</b>`;
 		}
 
 		return value;
