@@ -39,24 +39,24 @@ def get_cash_flow_initial_date(cash_flow):
     return date
 
 @frappe.whitelist()
-def get_deposits_per_store(cash_flow_entry, transaction_date):
+def get_deposits_per_store(transaction_date):
     deposits = []
-    data = frappe.db.sql(f"""
-        SELECT 
-            t2.day_date, 
-            t2.store, 
-            t2.transaction, 
-            t2.type, 
-            t2.amount 
-        FROM `tabEvoke Cash Flow` AS t1
-        JOIN `tabDaily Cash Flow Item` AS t2
-        ON t1.name = t2.parent
-        WHERE t1.name = '{cash_flow_entry}'
-        AND t2.day_date = '{transaction_date}'
-        AND NOT t2.store = 'Online Sales'
-        AND NOT t2.store = 'Office / Warehouse'
-        ORDER BY t2.day_date ASC, t2.store DESC, t2.transaction DESC
-    """, as_dict=1)
+    data = frappe.db.get_all(
+        'Evoke Cash Flow',
+        fields=[
+            'daily_entries.day_date',
+            'daily_entries.store',
+            'daily_entries.transaction',
+            'daily_entries.type',
+            'daily_entries.amount'
+        ],
+        filters=[
+            ['store', '!=', 'Online Sales'],
+            ['store', '!=', 'Office / Warehouse'],
+            ['day_date', '=', transaction_date]
+        ],
+        order_by='day_date DESC, store DESC, transaction DESC'
+    )
 
     for row in data:
         if row['transaction'] == 'Income':
@@ -68,23 +68,22 @@ def get_deposits_per_store(cash_flow_entry, transaction_date):
                     incentives = sub_row['amount']
                     break
 
-            store_deposits = frappe.db.sql(f"""
-                SELECT
-                    t1.name,
-                    t1.cash_flow_entry,
-                    t1.depository_date,
-                    t1.transaction_date,
-                    t2.store,
-                    t2.over_short_amount,              
-                    t2.for_deposit_amount,
-                    t2.accumulated_amount
-                FROM `tabDeposit` AS t1
-                JOIN `tabCredited Deposits` AS t2
-                ON t1.name = t2.parent
-                WHERE t1.cash_flow_entry = '{cash_flow_entry}'
-                AND t1.depository_date = '{transaction_date}'
-                AND t2.store = '{row['store']}'
-            """, as_dict=1)
+            store_deposits = frappe.db.get_all(
+                'Deposit',
+                fields=[
+                    'name',
+                    'depository_date',
+                    'transaction_date',
+                    'deposits.store',
+                    'deposits.over_short_amount',
+                    'deposits.for_deposit_amount',
+                    'deposits.accumulated_amount'
+                ],
+                filters=[
+                    ['store', '=', row['store']],
+                    ['depository_date', '=', transaction_date]
+                ]                      
+            )
 
             if store_deposits:
                 over_short_amount = store_deposits[0].over_short_amount
@@ -100,15 +99,29 @@ def get_deposits_per_store(cash_flow_entry, transaction_date):
             else:
                 deposit = deposit - over_short_amount
 
-            
-
             r = {
                 'day_date': row['day_date'], 
                 'store': row['store'], 
                 'over_short_amount': over_short_amount,
                 'accumulated_amount': accumulated_amount, 
-                'for_deposit_amount': deposit
+                'for_deposit_amount': round(deposit, 2)
             }
             deposits.append(r)
 
     return deposits
+
+
+@frappe.whitelist()
+def get_accumulated_deposits():
+    data = frappe.db.get_all('Deposit', fields=[
+            'deposits.deposit_date',
+            'deposits.transaction_date',
+            'deposits.store',
+            'deposits.over_short_amount',
+            'deposits.for_deposit_amount',
+            'deposits.amount_credited',
+            'deposits.is_short',
+            'deposits.is_deposited'
+        ]
+    )
+    return data
