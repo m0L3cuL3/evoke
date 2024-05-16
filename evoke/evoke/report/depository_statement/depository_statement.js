@@ -65,7 +65,7 @@ frappe.query_reports["Depository Statement"] = {
 		}
 
 		if (column.fieldname == "amount_credited") {
-			if (data["accumulated_amount"] == 0) {
+			if (data["amount_credited"] >= 0) {
 				value = `<b style="color:#13ad68">${value}</b>`;
 			}
 		}
@@ -78,4 +78,8 @@ frappe.query_reports["Depository Statement"] = {
 
 		return value;
 	},
+	tree: true,
+	name_field: "depository",
+	parent_field: "parent_depository",
+	initial_depth: 3,
 };
