@@ -8,36 +8,26 @@ from frappe.model.document import Document
 class Deposit(Document):
 	def validate(self):
 		self.set_status()
-		self.check_amount_found()
-
-	def check_amount_found(self):
-		row = None
-
-		for d in self.get('deposits'):
-			if d.amount_credited or d.accumulated_amount:
-				pass
-			else:
-				row = d.idx
-				break
-
-		if row is not None:
-			frappe.throw('Amount not found in row #{}'.format(row))
-				
-
 
 	def set_status(self):
-		partial_found = False
-    
 		for d in self.get('deposits'):
-			if d.accumulated_amount and d.accumulated_amount > 0 and not d.is_deposited:
-				partial_found = True
-				d.is_deposited = 0
-				break  # Stop iterating once 'Partial' status is found
-			else:
+			if d.over_short_amount == 0 and d.amount_credited == d.for_deposit_amount:
 				d.is_deposited = 1
+				d.is_short = 0
 
+			if  d.over_short_amount < 0 and d.amount_credited == 0:
+				d.is_deposited = 0
+				d.is_short = 1
+
+			if d.over_short_amount < 0 and d.amount_credited > 0:
+				d.is_deposited = 1
+				d.is_short = 1
+			
+			if d.over_short_amount > 0 and d.amount_credited > 0:
+				d.is_deposited = 1
+				d.is_short = 0
 				
-		if partial_found:
-			self.status = 'Partial'
-		else:
+		if self.total_for_deposit_amount == self.total_amount_credited:
 			self.status = 'Completed'
+		else:
+			self.status = 'Partial'

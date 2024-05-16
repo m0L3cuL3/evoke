@@ -7,29 +7,18 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "cash_flow_entry",
-  "status",
-  "column_break_sdrd",
   "depository_date",
   "transaction_date",
+  "column_break_sdrd",
+  "status",
   "section_break_jabn",
   "deposits",
   "section_break_ykhb",
-  "grand_total_amount",
+  "total_for_deposit_amount",
   "column_break_jygj",
-  "grand_total_amount_credited",
-  "column_break_xpnh",
-  "grand_total_accumulated_amount"
+  "total_amount_credited"
  ],
  "fields": [
-  {
-   "fieldname": "cash_flow_entry",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Cash Flow Entry",
-   "options": "Evoke Cash Flow",
-   "reqd": 1
-  },
   {
    "fieldname": "section_break_jabn",
    "fieldtype": "Section Break"
@@ -58,27 +47,11 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Transaction Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "grand_total_amount",
-   "fieldtype": "Currency",
-   "label": "Total Amount",
-   "read_only": 1
-  },
-  {
-   "fieldname": "grand_total_accumulated_amount",
-   "fieldtype": "Currency",
-   "label": "Total Accumulated Amount",
    "read_only": 1
   },
   {
    "fieldname": "section_break_ykhb",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_xpnh",
-   "fieldtype": "Column Break"
   },
   {
    "description": "This is set automatically upon saving the document.",
@@ -92,7 +65,13 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "grand_total_amount_credited",
+   "fieldname": "total_for_deposit_amount",
+   "fieldtype": "Currency",
+   "label": "Total For Deposit",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount_credited",
    "fieldtype": "Currency",
    "label": "Total Amount Credited",
    "read_only": 1
@@ -100,7 +79,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-03 13:11:28.221088",
+ "modified": "2024-05-16 12:06:32.586720",
  "modified_by": "Administrator",
  "module": "Evoke",
  "name": "Deposit",

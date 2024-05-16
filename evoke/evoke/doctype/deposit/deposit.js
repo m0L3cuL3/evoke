@@ -3,40 +3,136 @@
 
 function updateTableRowStyle(frm, rows) {
 	for (let i = 1; i < rows.length; i++) {
-		rows[i].style.backgroundColor = ""; // Reset color for all rows
 		const deposit = frm.doc.deposits[i - 1];
 
-		if (deposit.accumulated_amount > 0 && !deposit.is_deposited) {
+		// if (deposit.is_deposited && !deposit.is_short) {
+		// 	console.log("deposited");
+		// 	rows[i].style.backgroundColor = "#173b2c"; // green
+		// } else if (deposit.is_deposited && deposit.is_short) {
+		// 	console.log("deposited but short");
+		// 	rows[i].style.backgroundColor = "#a3222b"; // red
+		// } else if (!deposit.is_deposited && deposit.is_short) {
+		// 	console.log("did not deposit");
+		// 	rows[i].style.backgroundColor = "#a3222b"; // red
+		// } else {
+		// 	rows[i].style.backgroundColor = "";
+		// }
+
+		if (deposit.over_short_amount < 0) {
 			rows[i].style.backgroundColor = "#a3222b";
 		} else {
 			rows[i].style.backgroundColor = "#173b2c";
+		}
+
+		if (deposit.amount_credited == 0) {
+			rows[i].style.backgroundColor = "#a3222b";
 		}
 	}
 }
 
 function updateGrandTotal(frm) {
 	let deposits = frm.doc.deposits;
-	let grand_total_amount = 0;
-	let grand_total_amount_credited = 0;
-	let grand_total_accumulated_amount = 0;
+	let total_for_deposit_amount = 0;
+	let total_amount_credited = 0;
 
 	deposits.forEach((item) => {
-		grand_total_amount += item.for_deposit_amount;
-		grand_total_amount_credited += item.amount_credited;
-		grand_total_accumulated_amount += item.accumulated_amount;
+		total_for_deposit_amount += item.for_deposit_amount;
+		total_amount_credited += item.amount_credited;
 	});
 
-	frm.doc.grand_total_amount = grand_total_amount;
-	frm.doc.grand_total_amount_credited = grand_total_amount - grand_total_amount_credited;
-	frm.doc.grand_total_accumulated_amount = grand_total_accumulated_amount;
-	refresh_field("grand_total_amount");
-	refresh_field("grand_total_amount_credited");
-	refresh_field("grand_total_accumulated_amount");
+	frm.doc.total_for_deposit_amount = total_for_deposit_amount;
+	frm.doc.total_amount_credited = total_amount_credited;
+
+	refresh_field("total_for_deposit_amount");
+	refresh_field("total_amount_credited");
+}
+
+function generateDepositBreakdownContent(data) {
+	var content = ``;
+
+	data.forEach(function (item) {
+		const isDeposited =
+			item.is_deposited && !item.is_short
+				? {}
+				: {
+						fieldtype: "Currency",
+						options: "currency",
+				  };
+		content += `<p class="m-0">[${moment(item.deposit_date).format(
+			"dddd, MMMM Do YYYY"
+		)}]: <strong>${frappe.format(item.amount, isDeposited, { inline: true })}</strong></p>`;
+	});
+	return content;
+}
+
+function getAccumulatedDeposits(frm) {
+	frappe
+		.call({
+			method: "evoke.utilities.api.get_accumulated_deposits",
+			error: (r) => {
+				frappe.throw(__("Deposits failed to load."));
+			},
+		})
+		.done((r) => {
+			// Convert date strings to Date objects
+			let depositories = r.message;
+			const depository_date = new Date(frm.doc.depository_date);
+			depositories.forEach((depo) => {
+				depo["deposit_date"] = new Date(depo["deposit_date"]);
+				depo["transaction_date"] = new Date(depo["transaction_date"]);
+			});
+
+			// Group non-deposited transactions by store
+			let nonDepositedByStore = {};
+			depositories.forEach((depo) => {
+				if (!nonDepositedByStore[depo["store"]]) {
+					nonDepositedByStore[depo["store"]] = [];
+				}
+				nonDepositedByStore[depo["store"]].push({
+					amount:
+						depo["is_deposited"] && !depo["is_short"]
+							? "Deposited"
+							: depo["over_short_amount"],
+					deposit_date: depo["deposit_date"].toISOString().split("T")[0],
+					is_deposited: depo["is_deposited"],
+					is_short: depo["is_short"],
+				});
+			});
+
+			// Print the breakdown by store
+			Object.entries(nonDepositedByStore).forEach(([store, data]) => {
+				frm.fields_dict["deposits"].$wrapper
+					.find(".grid-body .rows")
+					.find(".grid-row")
+					.each(function (i, item) {
+						let d =
+							locals[frm.fields_dict["deposits"].grid.doctype][
+								$(item).attr("data-name")
+							];
+
+						let forDepositCell = $(item).find("[data-fieldname='for_deposit_amount']");
+
+						if (d["store"] == store) {
+							forDepositCell.popover({
+								title: store,
+								html: true,
+								placement: "left",
+								trigger: "hover focus",
+								content: function () {
+									return generateDepositBreakdownContent(data);
+								},
+							});
+						}
+					});
+			});
+		});
 }
 
 frappe.ui.form.on("Deposit", {
 	refresh: function (frm) {
 		var rows = document.getElementsByClassName("grid-row");
+		frm.set_df_property("deposits", "cannot_add_rows", true);
+		getAccumulatedDeposits(frm);
 
 		updateTableRowStyle(frm, rows);
 		updateGrandTotal(frm);
@@ -47,161 +143,59 @@ frappe.ui.form.on("Deposit", {
 		updateTableRowStyle(frm, rows);
 		updateGrandTotal(frm);
 	},
-	cash_flow_entry: function (frm, cdt, cdn) {
-		let cashflow = frm.doc.cash_flow_entry;
-
-		frm.set_value("deposits", []);
-		refresh_field("deposits");
-
-		frappe.db.get_doc("Evoke Cash Flow", cashflow).then((doc) => {
-			frm.doc.depository_date = frappe.datetime.add_days(doc.date, 1);
-			frm.doc.transaction_date = doc.date;
-			refresh_field("transaction_date");
-			frappe
-				.call({
-					method: "evoke.utilities.api.get_deposits_per_store",
-					args: {
-						cash_flow_entry: cashflow,
-						transaction_date: doc.date,
-					},
-					btn: $(".primary-action"),
-					callback: (r) => {
-						r.message.forEach((item) => {
-							let entry = frm.add_child("deposits");
-							entry.deposit_date = frm.doc.depository_date;
-							entry.transaction_date = item.day_date;
-							entry.store = item.store;
-							entry.for_deposit_amount = item.for_deposit_amount;
-							// entry.accumulated_amount = item.accumulated_amount;
-							// set default deposited status
-							if (item.accumulated_amount > 0) {
-								entry.accumulated_amount =
-									item.accumulated_amount + item.for_deposit_amount;
-								entry.is_deposited = 0;
-							} else {
-								entry.accumulated_amount = item.accumulated_amount;
-								entry.is_deposited = 1;
-							}
-						});
-						refresh_field("deposits");
-						refresh_field("depository_date");
-					},
-					error: (r) => {
-						frappe.throw(__("Deposits failed to load."));
-					},
-				})
-				.done((r) => {
-					frappe.show_alert(
-						{
-							title: __("Depository"),
-							indicator: "green",
-							message: __(
-								`Deposits loaded from <strong>${cashflow}</strong> successfully.`
-							),
-						},
-						5
-					);
-				});
-		});
-	},
 	depository_date: function (frm) {
-		let cashflow = frm.doc.cash_flow_entry;
 		frm.set_value("deposits", []);
-		frappe.db.get_doc("Evoke Cash Flow", cashflow).then((doc) => {
-			frm.doc.transaction_date = frappe.datetime.add_days(frm.doc.depository_date, -1);
-			refresh_field("transaction_date");
-			frappe
-				.call({
-					method: "evoke.utilities.api.get_deposits_per_store",
-					args: {
-						cash_flow_entry: cashflow,
-						transaction_date: frm.doc.transaction_date,
-					},
-					btn: $(".primary-action"),
-					callback: (r) => {
-						r.message.forEach((item) => {
-							let entry = frm.add_child("deposits");
-							entry.deposit_date = frm.doc.depository_date;
-							entry.transaction_date = item.day_date;
-							entry.store = item.store;
+		frm.doc.transaction_date = frappe.datetime.add_days(frm.doc.depository_date, -1);
+		refresh_field("transaction_date");
+		frappe
+			.call({
+				method: "evoke.utilities.api.get_deposits_per_store",
+				args: {
+					transaction_date: frm.doc.transaction_date,
+				},
+				btn: $(".primary-action"),
+				callback: (r) => {
+					r.message.forEach((item) => {
+						let entry = frm.add_child("deposits");
+						entry.deposit_date = frm.doc.depository_date;
+						entry.transaction_date = item.day_date;
+						entry.store = item.store;
+						entry.for_deposit_amount = item.for_deposit_amount;
+						entry.over_short_amount = item.over_short_amount;
+
+						if (item.for_deposit_amount > entry.for_deposit_amount) {
+							entry.for_deposit_amount =
+								item.for_deposit_amount - item.over_short_amount;
+						} else if (item.for_deposit_amount < entry.for_deposit_amount) {
+							entry.for_deposit_amount =
+								item.for_deposit_amount + Math.abs(item.over_short_amount);
+						} else if (item.for_deposit_amount == entry.for_deposit_amount) {
 							entry.for_deposit_amount = item.for_deposit_amount;
-							// entry.accumulated_amount = item.accumulated_amount;
-							// set default deposited status
-							if (item.accumulated_amount > 0) {
-								entry.accumulated_amount =
-									item.accumulated_amount + item.for_deposit_amount;
-								entry.is_deposited = 0;
-							} else {
-								entry.accumulated_amount = item.accumulated_amount;
-								entry.is_deposited = 1;
-							}
-						});
-						refresh_field("deposits");
-						refresh_field("depository_date");
+						}
+					});
+					refresh_field("deposits");
+					refresh_field("depository_date");
+				},
+			})
+			.done((r) => {
+				const transaction_date = moment(frm.doc.transaction_date).format(
+					"dddd, MMMM Do YYYY"
+				);
+				const indicator = r.message.length > 0 ? "green" : "red";
+				const message =
+					r.message.length > 0
+						? `Successfully loaded transactions from ${transaction_date}.`
+						: `No transactions found from ${transaction_date}.`;
+
+				frappe.show_alert(
+					{
+						title: __("Depository"),
+						indicator: indicator,
+						message: __(message),
 					},
-				})
-				.done((r) => {
-					frappe.show_alert(
-						{
-							title: __("Depository"),
-							indicator: "green",
-							message: __(
-								`Deposits loaded from <strong>${cashflow}</strong> successfully.`
-							),
-						},
-						5
-					);
-				});
-		});
-	},
-	transaction_date: function (frm) {
-		let cashflow = frm.doc.cash_flow_entry;
-		frm.set_value("deposits", []);
-		frappe.db.get_doc("Evoke Cash Flow", cashflow).then((doc) => {
-			frm.doc.depository_date = frappe.datetime.add_days(frm.doc.transaction_date, 1);
-			frappe
-				.call({
-					method: "evoke.utilities.api.get_deposits_per_store",
-					args: {
-						cash_flow_entry: cashflow,
-						transaction_date: frm.doc.transaction_date,
-					},
-					btn: $(".primary-action"),
-					callback: (r) => {
-						r.message.forEach((item) => {
-							let entry = frm.add_child("deposits");
-							entry.deposit_date = frm.doc.depository_date;
-							entry.transaction_date = item.day_date;
-							entry.store = item.store;
-							entry.for_deposit_amount = item.for_deposit_amount;
-							// entry.accumulated_amount = item.accumulated_amount;
-							// set default deposited status
-							if (item.accumulated_amount > 0) {
-								entry.accumulated_amount =
-									item.accumulated_amount + item.for_deposit_amount;
-								entry.is_deposited = 0;
-							} else {
-								entry.accumulated_amount = item.accumulated_amount;
-								entry.is_deposited = 1;
-							}
-						});
-						refresh_field("deposits");
-						refresh_field("depository_date");
-					},
-				})
-				.done((r) => {
-					frappe.show_alert(
-						{
-							title: __("Depository"),
-							indicator: "green",
-							message: __(
-								`Deposits loaded from <strong>${cashflow}</strong> successfully.`
-							),
-						},
-						5
-					);
-				});
-		});
+					5
+				);
+			});
 	},
 });
 
@@ -209,65 +203,40 @@ frappe.ui.form.on("Credited Deposits", {
 	refresh: function (frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
 		var rows = document.getElementsByClassName("grid-row");
-		if (row.accumulated_amount > 0) {
-			// change row style on update
+		const depositField = frm.get_field("deposits").grid.grid_rows[row.idx - 1];
+
+		if (row.over_short_amount < 0) {
 			rows[row.idx].style.backgroundColor = "#a3222b";
-
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.accumulated_amount =
-				row.accumulated_amount;
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.is_deposited = 0;
-
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field("is_deposited");
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field(
-				"accumulated_amount"
-			);
 		} else {
-			// change row style on update
 			rows[row.idx].style.backgroundColor = "#173b2c";
-
-			// update doc fields
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.accumulated_amount =
-				row.accumulated_amount;
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.is_deposited = 1;
-
-			// refresh fields
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field("is_deposited");
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field(
-				"accumulated_amount"
-			);
 		}
+
+		row.over_short_amount = row.amount_credited - row.for_deposit_amount;
+
+		depositField.refresh_field("is_short");
+		depositField.refresh_field("is_deposited");
+		depositField.refresh_field("over_short_amount");
 	},
-	accumulated_amount: function (frm, cdt, cdn) {
-		let row = locals[cdt][cdn];
+	amount_credited: function (frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
 		var rows = document.getElementsByClassName("grid-row");
-		if (row.accumulated_amount > 0) {
-			// change row style on update
-			rows[row.idx].style.backgroundColor = "#a3222b";
+		const depositField = frm.get_field("deposits").grid.grid_rows[row.idx - 1];
 
-			// update doc fields
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.accumulated_amount =
-				row.accumulated_amount;
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.is_deposited = 0;
+		console.log(row);
 
-			// refresh fields
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field("is_deposited");
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field(
-				"accumulated_amount"
-			);
-		} else {
-			// change row style on update
+		if (
+			row.amount_credited > row.for_deposit_amount ||
+			row.amount_credited == row.for_deposit_amount
+		) {
 			rows[row.idx].style.backgroundColor = "#173b2c";
-
-			// update doc fields
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.accumulated_amount =
-				row.accumulated_amount;
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].doc.is_deposited = 1;
-
-			// refresh fields
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field("is_deposited");
-			frm.get_field("deposits").grid.grid_rows[row.idx - 1].refresh_field(
-				"accumulated_amount"
-			);
+		} else {
+			rows[row.idx].style.backgroundColor = "#a3222b";
 		}
+
+		row.over_short_amount = row.amount_credited - row.for_deposit_amount;
+
+		depositField.refresh_field("is_short");
+		depositField.refresh_field("is_deposited");
+		depositField.refresh_field("over_short_amount");
 	},
 });
