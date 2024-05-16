@@ -139,13 +139,14 @@ def get_report_summary(filters):
 
     if operational_expenses == None:
         operational_expenses = 0
-
-    profit = sales - (expenses + rental + administrative_expense + operational_expenses)
+    
+    total_expenses = expenses + rental + administrative_expense + operational_expenses
+    profit = sales - total_expenses
 
 
     report_summary = [
         {"label":"Grand Total Sales","value": sales,'indicator':'Blue', "datatype": "Currency"},
-        {"label":"Grand Total Expenses","value": expenses,'indicator':'Red', "datatype": "Currency"},
+        {"label":"Grand Total Expenses","value": total_expenses,'indicator':'Red', "datatype": "Currency"},
         {"label":"Grand Total Profit","value": profit,'indicator':'Green', "datatype": "Currency"},
     ]
 
@@ -177,7 +178,8 @@ def get_chart(filters):
             filters=[
                 # ['name', '=', dcf],
                 ['store', '=', row['store_name']],
-                ['transaction', '=', 'Income']
+                ['transaction', '=', 'Income'],
+                ['day_date', 'between', [filters.get('date_from'), filters.get('date_to')]]
             ]
         )
 
@@ -190,7 +192,8 @@ def get_chart(filters):
             filters=[
                 # ['name', '=', dcf],
                 ['store', '=', row['store_name']],
-                ['transaction', '=', 'Expenses']
+                ['transaction', '=', 'Expenses'],
+                ['day_date', 'between', [filters.get('date_from'), filters.get('date_to')]]
             ]
         )
 
